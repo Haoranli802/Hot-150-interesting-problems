@@ -234,4 +234,63 @@ class Pair {
 
 现创建见一个常字符数组保存四个可替换的字母，然后把bank的String放入到set去重，然后创建map保存基因对应的step和负责防止重复加入，queue来保存转换后的基因，然后加入startGene到queue和map。然后层序遍历queue，对每一个字符串，转换为char[], 然后对每一个字符，尝试替换成一个不同的四字符，方法是先用char[].clone克隆原始字符组，然后替换。然后对于新的字符串，如果存在在set而不存在在map，判断是否是end，如果是返回当前step + 1，如果不是，加入queue，map加入对应step，继续遍历。如果遍历完没找到，返回-1.
 
+***
+
+### LC212. 单词搜索 II
+
+```
+class Solution {
+    class TrieNode {
+        String s;
+        TrieNode[] tns = new TrieNode[26];
+    }
+    void insert(String s) {
+        TrieNode p = root;
+        for (int i = 0; i < s.length(); i++) {
+            int u = s.charAt(i) - 'a';
+            if (p.tns[u] == null) p.tns[u] = new TrieNode();
+            p = p.tns[u];
+        }
+        p.s = s;
+    }
+    Set<String> set = new HashSet<>();
+    char[][] board;
+    int n, m;
+    TrieNode root = new TrieNode();
+    int[][] dirs = new int[][]{{1,0},{-1,0},{0,1},{0,-1}};
+    boolean[][] vis = new boolean[15][15];
+    public List<String> findWords(char[][] _board, String[] words) {
+        board = _board;
+        m = board.length; n = board[0].length;
+        for (String w : words) insert(w);
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int u = board[i][j] - 'a';
+                if (root.tns[u] != null) {
+                    vis[i][j] = true;
+                    dfs(i, j, root.tns[u]);
+                    vis[i][j] = false;
+                }
+            }
+        }
+        List<String> ans = new ArrayList<>();
+        for (String s : set) ans.add(s);
+        return ans;
+    }
+    void dfs(int i, int j, TrieNode node) {
+        if (node.s != null) set.add(node.s);
+        for (int[] d : dirs) {
+            int dx = i + d[0], dy = j + d[1];
+            if (dx < 0 || dx >= m || dy < 0 || dy >= n) continue;
+            if (vis[dx][dy]) continue;
+            int u = board[dx][dy] - 'a';
+            if (node.tns[u] != null) {
+                vis[dx][dy] = true;
+                dfs(dx, dy, node.tns[u]);
+                vis[dx][dy] = false;
+            }
+        }
+    }
+}
+```
 

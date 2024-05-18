@@ -425,7 +425,10 @@ public int trailingZeroes(int n) {
 }
 ```
 
+***
+
 ### LC69. x 的平方根
+
 思路：先判断如果x == 0或者x == 1直接返回，然后从[0, x/2] left <= right 的区间找mid，如果 mid == x/mid 那么返回mid，如果 mid > x/mid 那么right = mid - 1，如果 mid < x/mid 那么left = mid + 1。最后返回left - 1，因为当left > right 的时候 left * left 是大于最终需要的数字的，所以向下取整，结果要减一。 
 
 ```
@@ -444,4 +447,133 @@ public int mySqrt(int x) {
 }
 // Time O(logX)
 // Space O(1)
+```
+
+***
+
+### LC50. Pow(x, n)
+
+思路：先把n转换为 Long，以免值溢出，如果n小于0，那么x = 1/x，n = -n，然后进入计算快速幂。快速幂的思路是，可以吧幂换算成累加幂。假如是3^5，那么5的位表达为101，那么就代表3^5 = 3^3 * 3^1，因为第一位和第三位为1。具体代码如下：
+
+```
+public double myPow(double x, int n) {
+        if(x == 0 || x == 1 || n == 1) return x;
+        long b = n;
+        if(n < 0){
+            x = 1 /x;
+            b = -b;
+        }
+        double total = 1.0;
+        while(b > 0){
+            if((b & 1) == 1) total *= x;
+            x *= x;
+            b = b >> 1;
+        }
+        return total;
+}
+Time: O(logN)
+Space: O(1)
+```
+
+***
+
+### LC149. 直线上最多的点数
+
+枚举直线暴力算法思路：两点确定一条直线，先遍历int[] x 在 i[0:n]区间，然后遍历int[] y 在 j[i+1:n] 区间，然后遍历int[] z 在k[j+1:n] 区间，要判断的是 z是否在x，y的直线上，判断方法基于
+(y1 - x1) / (y0 - x0) = (z1 - y1) / (z0 - y0) 因为除法会有精确度丢失问题，所以我们转换为乘法，也就是判断(y1 - x1) * (z0 - y0) == (y0 - x0) * (z1 - y1)，如果相等，那么curCount++，然后最后更新ans为ans和curCount的最大值。
+
+```
+class Solution {
+    public int maxPoints(int[][] points) {
+        if(points.length <= 2) return points.length;
+        int n = points.length, ans = 1;
+        for(int i = 0; i < n; i++){
+            int[] x = points[i];
+            for(int j = i + 1; j < n; j++){
+                int[] y = points[j];
+                int count = 2;
+                for(int k = j + 1; k < n; k++){
+                    int[] z = points[k];
+                    int s1 = (y[1] - x[1]) * (z[0] - y[0]);
+                    int s2 = (y[0] - x[0]) * (z[1] - y[1]);
+                    if(s1 == s2) count++;
+                }
+                ans = Math.max(ans, count);
+            }
+        }
+        return ans;
+    }
+}
+// Time: O(n^3)
+// Space: O(1)
+```
+
+***
+
+## 二维dp
+                                
+### LC97. 交错字符串
+
+二维dp思路：跟找到终点路径类似，先拿到s1，s2的长度，如果加起来不等于最终长度直接返回false。然后建立二维boolean[n + 1][m + 1]布尔数组，默认为false，然后dp[0][0]设置为true以做后续判断，然后先判断第一行第一列的情况，如果相同下标和s3相等，那么dp为true，如果不相等直接结束判断。然后开始遍历，如果当前dp[i-1][j]为true，那么代表可以往下走，判断s1[i-1]是否和s3[i+j-1]相等，如果是的话那么dp[i][j] = true。如果当前dp[i][j-1]为true。那么代表可以往右走，判断s2[j-1]是否和s3[i+j-1]相等，如果相等那么dp[i][j] = true。最后返回dp[i][j]的值即可。
+
+```
+class Solution {
+    public boolean isInterleave(String s1, String s2, String s3) {
+        int n = s1.length(), m = s2.length(), k = s3.length();
+        if(n + m != k) return false;
+        boolean[][] dp = new boolean[n + 1][m + 1];
+        dp[0][0] = true;
+        for(int i = 1; i <= n; i++){
+            if(s1.charAt(i - 1) == s3.charAt(i - 1)) dp[i][0] = true;
+            else break;
+        }
+        for(int i = 1; i <= m; i++){
+            if(s2.charAt(i - 1) == s3.charAt(i - 1)) dp[0][i] = true;
+            else break;
+        }
+        for(int i = 1; i <= n; i++){
+            for(int j = 1; j <= m; j++){
+                dp[i][j] = dp[i - 1][j] && s1.charAt(i - 1) == s3.charAt(i + j - 1) ||
+                        dp[i][j - 1] && s2.charAt(j - 1) == s3.charAt(i + j - 1);
+            }
+        }
+        return dp[n][m];
+    }
+}
+// Time : O(n * m)
+// Space : O(n * m)
+```
+
+***
+
+### LC221. 最大正方形
+
+思路：先把第一行第一列前面包围住一圈，也就是初始化dp为int[n+1][m+1]，这样的话方便计算，然后从第一个点开始遍历，如果是1的话，那么判断dp[row + 1][col + 1] = Math.min(Math.min(dp[row + 1][col], dp[row][col + 1]), dp[row][col]) + 1; 也就是判断在dp数组里面这个点的左，上和左上的最小值，然后加一，就是当前点的最大正方形的直径。然后记录最大直径，最后返回面积为直径的平方。
+
+```
+class Solution {
+    public int maximalSquare(char[][] matrix) {
+        // base condition
+        if (matrix == null || matrix.length < 1 || matrix[0].length < 1) return 0;
+
+        int height = matrix.length;
+        int width = matrix[0].length;
+        int maxSide = 0;
+
+        // 相当于已经预处理新增第一行、第一列均为0
+        int[][] dp = new int[height + 1][width + 1];
+
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+                if (matrix[row][col] == '1') {
+                    dp[row + 1][col + 1] = Math.min(Math.min(dp[row + 1][col], dp[row][col + 1]), dp[row][col]) + 1;
+                    maxSide = Math.max(maxSide, dp[row + 1][col + 1]);
+                }
+            }
+        }
+        return maxSide * maxSide;
+    }
+}
+// Time: O(h * w)
+// Space: O(h * w)
 ```

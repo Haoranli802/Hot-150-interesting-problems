@@ -368,3 +368,80 @@ return res;
 Time: O(logN)
 Space: O(1)
 ```
+***
+
+### LC137. 只出现一次的数字 II
+
+思路，设置一个32位的count数组，然后把每个数字的32位加上，然后每一位都 % 3 找到 余数，然后再用一个res把每一位全部加上。简洁的方法如下：
+```
+int res = 0;
+for(int i = 0; i < 32; i++){
+    int total = 0;
+    for(int num : nums){
+        total += ((num >> i) & 1);
+        
+    }
+    if(total % 3 != 0){
+        res |= 1 << i;
+    }
+}
+return res;
+```
+
+***
+
+### LC201. 数字范围按位与
+
+思路：找到最短公共前缀，然后把大数右移前缀的长度。找的方法位，while(left < right) 同时右移left和right，然后拿到count，再将right左移前缀长度
+
+```
+public int rangeBitwiseAnd(int left, int right) {
+        int zeroCount = 0;
+        while(left < right){
+            left = left >> 1;
+            right = right >> 1;
+            zeroCount ++;
+        }
+        return right << zeroCount;
+}
+```
+
+***
+
+## 数学
+
+### LC172. 阶乘后的零
+
+做法就是找到整个阶乘中有多少个5，规律是每五个数字中就有一个五，每二十五个数字中就有两个五，每一百二十五个数字中有三个五，以此类推。所以我们可以循环把n除以5，每次都加上除以5的结果即可。
+
+```
+public int trailingZeroes(int n) {
+        int count = 0;
+        while(n > 0){
+            count += n / 5;
+            n = n / 5;
+        }
+        return count;
+}
+```
+
+### LC69. x 的平方根
+思路：先判断如果x == 0或者x == 1直接返回，然后从[0, x/2] left <= right 的区间找mid，如果 mid == x/mid 那么返回mid，如果 mid > x/mid 那么right = mid - 1，如果 mid < x/mid 那么left = mid + 1。最后返回left - 1，因为当left > right 的时候 left * left 是大于最终需要的数字的，所以向下取整，结果要减一。 
+
+```
+public int mySqrt(int x) {
+        if(x == 0) return 0;
+        if(x == 1) return 1;
+        int left = 1;
+        int right = x / 2;
+        while(left <= right){
+            int mid = left + (right - left) / 2;
+            if(mid == x / mid) return mid;
+            else if(mid > x / mid) right = mid -1;
+            else left = mid + 1;
+        }
+        return left - 1;
+}
+// Time O(logX)
+// Space O(1)
+```

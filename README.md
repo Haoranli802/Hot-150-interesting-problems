@@ -328,3 +328,43 @@ class Solution {
 ### LC502. IPO
 
 思路：先把profit跟capical绑定成数组，然后根据capital从小到大排序，然后创建priorityqueue和index = 0，进入while loop，条件为k--大于0，如果下标为i的数组capital 小于等于 w，那么加入priorityqueue然后i++，直到i == n或者w 小于当前capital，然后如果priorityqueue里面什么都没有，退出循环，如果有东西的话w加上队列头继续循环直到队列为空或者k == 0，然后返回w。
+
+***
+
+### LC373. 查找和最小的 K 对数字
+
+思路：首先用长度为3的数组来表示一对数字，第一位为和，第二位为nums1下标，第三位为nums2下标。然后创建priorityqueue，队列比对逻辑为a[0] - b[0]。然后约定好，每拿出一组数字，只把  
+(i, j + 1)加入到数组，因为(i, j)可以由(i - 1, j)和(i, j - 1)得出，那么会出现重复，所以只加入(i, j + 1)来得到(i, j)。假设nums1长度为n那么我们同时要把(0, 0)到(Math.min(n, k) - 1, 0)加入以便于计算。然后每次遍历priorityqueue时拿去堆顶部，然后加上(i, j + 1)直到满足k个即可。
+
+***
+
+## 位运算
+
+### LC190. 颠倒二进制位
+
+思路
+```
+十进制
+ans = ans * 10 + n % 10;
+n /= 10;
+
+二进制
+ans = ans * 2 + n % 2;
+n /= 2;
+
+位运算
+ans = 0;
+ans = (ans << 1) | (n & 1)  ans右移一位然后加上n的最后一位数
+n = n >> 1; n左移一位，因为最后一位数已经被加到ans里面了
+
+code
+int res = 0;
+for(int i = 0; i < 32; i++){  要走32位，因为前置0是有影响的
+    res = (res << 1) | (n & 1);
+    n = n >> 1;
+}
+return res;
+
+Time: O(logN)
+Space: O(1)
+```

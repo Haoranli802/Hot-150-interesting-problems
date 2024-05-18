@@ -294,3 +294,37 @@ class Solution {
 }
 ```
 
+***
+
+### LC427. 建立四叉树
+
+思路：建立helper function，遍历整个数组，判断整个数组是否相等，如果是的话，返回节点值和isLeaf，如果不是那么返回false，false和四个新的helper function的值。
+```
+    private Node dfs(int[][] grid, int rowS, int rowE, int colS, int colE){
+       boolean same = true;
+       int first = grid[rowS][colS];
+       for(int i = rowS; i < rowE; i++){
+            for(int j = colS; j < colE; j++){
+                if(grid[i][j] != first) same = false;
+            }
+        }
+        if(same) return new Node(first == 1, true);
+        return new Node(false, false, 
+        dfs(grid, rowS, (rowS + rowE) / 2, colS, (colS + colE) / 2),
+        dfs(grid, rowS, (rowS + rowE) / 2, (colS + colE) / 2, colE),
+        dfs(grid, (rowS + rowE) / 2, rowE, colS, (colS + colE) / 2),
+        dfs(grid, (rowS + rowE) / 2, rowE, (colS + colE) / 2, colE)); 
+    }
+```
+
+***
+
+### LC162. 寻找峰值
+
+思路：二分，不过要跟着数组上升的方向走，如果mid的值小于mid + 1，那么left = mid + 1，如果不小于的话，right = mid，最后返回left
+
+***
+
+### LC502. IPO
+
+思路：先把profit跟capical绑定成数组，然后根据capital从小到大排序，然后创建priorityqueue和index = 0，进入while loop，条件为k--大于0，如果下标为i的数组capital 小于等于 w，那么加入priorityqueue然后i++，直到i == n或者w 小于当前capital，然后如果priorityqueue里面什么都没有，退出循环，如果有东西的话w加上队列头继续循环直到队列为空或者k == 0，然后返回w。

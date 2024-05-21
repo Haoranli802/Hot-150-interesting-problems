@@ -247,6 +247,8 @@ Time: O(N^2) Space: O(N^2)
 
 现创建见一个常字符数组保存四个可替换的字母，然后把bank的String放入到set去重，然后创建map保存基因对应的step和负责防止重复加入，queue来保存转换后的基因，然后加入startGene到queue和map。然后层序遍历queue，对每一个字符串，转换为char[], 然后对每一个字符，尝试替换成一个不同的四字符，方法是先用char[].clone克隆原始字符组，然后替换。然后对于新的字符串，如果存在在set而不存在在map，判断是否是end，如果是返回当前step + 1，如果不是，加入queue，map加入对应step，继续遍历。如果遍历完没找到，返回-1.
 
+Time: O(C * n * m) C = 4 n = String length m = bank length 因为每个合法的序列都要计算C * n种变式，然后有m个合法序列 Space: O(n * m)
+
 ***
 
 ## 字典树（前缀树）
@@ -334,6 +336,8 @@ class Solution {
     }
 ```
 
+Time: O(n^2 * logn) 可以约等于 O(n^2) Space: O(logn) 
+
 ***
 
 ## 二分查找
@@ -341,6 +345,8 @@ class Solution {
 ### LC162. 寻找峰值
 
 思路：二分，不过要跟着数组上升的方向走，如果mid的值小于mid + 1，那么left = mid + 1，如果不小于的话，right = mid，最后返回left
+
+O(logn), O(1)
 
 ***
 
@@ -350,12 +356,16 @@ class Solution {
 
 思路：先把profit跟capical绑定成数组，然后根据capital从小到大排序，然后创建priorityqueue和index = 0，进入while loop，条件为k--大于0，如果下标为i的数组capital 小于等于 w，那么加入priorityqueue然后i++，直到i == n或者w 小于当前capital，然后如果priorityqueue里面什么都没有，退出循环，如果有东西的话w加上队列头继续循环直到队列为空或者k == 0，然后返回w。
 
+Time: O(max(nlogn, klogn)) Space: O(n)
+
 ***
 
 ### LC373. 查找和最小的 K 对数字
 
 思路：首先用长度为3的数组来表示一对数字，第一位为和，第二位为nums1下标，第三位为nums2下标。然后创建priorityqueue，队列比对逻辑为a[0] - b[0]。然后约定好，每拿出一组数字，只把  
 (i, j + 1)加入到数组，因为(i, j)可以由(i - 1, j)和(i, j - 1)得出，那么会出现重复，所以只加入(i, j + 1)来得到(i, j)。假设nums1长度为n那么我们同时要把(0, 0)到(Math.min(n, k) - 1, 0)加入以便于计算。然后每次遍历priorityqueue时拿去堆顶部，然后加上(i, j + 1)直到满足k个即可。
+
+Time: O(klogmin(n, k)), Space: O(min(n, k)) 
 
 ***
 

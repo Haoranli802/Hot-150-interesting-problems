@@ -418,7 +418,7 @@ for(int i = 0; i < 32; i++){
 }
 return res;
 ```
-
+O(32n), O(1)
 ***
 
 ### LC201. 数字范围按位与
@@ -436,6 +436,7 @@ public int rangeBitwiseAnd(int left, int right) {
         return right << zeroCount;
 }
 ```
+O(logN), O(1)
 
 ***
 
@@ -455,6 +456,7 @@ public int trailingZeroes(int n) {
         return count;
 }
 ```
+Time: N(logn), Space: O(1)
 
 ***
 
